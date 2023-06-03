@@ -44,7 +44,7 @@ Video Demo of Application:
 
 ## Credits:
 
-1. https://www.npmjs.com/package/figlet
+1. https://www.npmjs.com/package/figlet (Help with logging the app title to terminal.)
 
  Instructor, TAs, and classmates.
 
