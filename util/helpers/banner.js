@@ -58,7 +58,7 @@ function logBanner () {
         //maxLength, then we add border chars and padding on left (we rely on padEnd() adn padStart() methods). 
         const borderedFigletText = textLines.map(line => {
           const paddedLine = line.padEnd(maxLength, ' ');
-          return `| ${paddedLine.padStart(maxLength + padding * 3, ' ')} |`;
+          return ` | ${paddedLine.padStart(maxLength + padding * 3, ' ')}|`;
         }).join('\n'); 
       
         return `${horizontalLine}\n${borderedFigletText}\n${horizontalLine}`;
@@ -69,7 +69,6 @@ function logBanner () {
       
       console.log(borderedText);
 }
-
 
 
 export default logBanner;

@@ -1,5 +1,6 @@
 import mysql2 from 'mysql2';
 import logBanner from './util/helpers/banner.js';
+import displayMainMenu from './util/commandLineUtils.js';
 
 
 //Creates connection from Nodejs to database engine on local machine with .createConnection.
@@ -12,12 +13,15 @@ const db = mysql2.createConnection({
 });
 
 logBanner();
+displayMainMenu();
 
-db.query('select * from employee', function(err, data){
-    if (err) {
-        console.log("Error!", err);
-    } else {
-        console.log('here is the data:', data);
-    }
 
-})
+// db.query('select * from employee', function(err, data){
+//     if (err) {
+//         console.log("Error!", err);
+//     } else {
+//         console.log('here is the data:', data);
+//     }
+
+// })
+

@@ -45,7 +45,7 @@ Video Demo of Application:
 ## Credits:
 
 1. https://www.npmjs.com/package/figlet (Help with logging the app title to terminal.)
-
+2. https://www.knowledgehut.com/blog/web-development/node-js-process-exit (Help with process.exit())
  Instructor, TAs, and classmates.
 
 ## Questions
