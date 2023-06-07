@@ -54,7 +54,22 @@ function displayMainMenu() {
   
   // Function to handle the "View all employees" menu option
   function viewAllEmployees() {
+
+    const sql = ''
     // TODO: Add logic to retrieve and display all employees from the database
+    db.query(sql, (err, results) => {
+      if (err) {
+        results.status(400).json({ error: "There was an Error"})
+        return;
+      }
+      resizeBy.json({
+        message: 'success',
+        data: results
+      });
+    });
+
+
+
     console.log('View all employees');
     displayMainMenu(); // Display the main menu again
   }
