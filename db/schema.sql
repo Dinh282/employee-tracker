@@ -6,7 +6,7 @@ USE company_employees_db;
 -- Create department table:
 CREATE TABLE department (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  company_name VARCHAR(30) NOT NULL
+  department_name VARCHAR(30) NOT NULL
 );
 
 -- Create role table:

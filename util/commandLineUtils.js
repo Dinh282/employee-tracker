@@ -1,4 +1,6 @@
 import inquirer from 'inquirer';
+import db from './../server.js';
+
 
 // Function to display the main menu and prompt for user choice
 function displayMainMenu() {
@@ -9,7 +11,7 @@ function displayMainMenu() {
           name: 'choice',
           message: 'What would you like to do?',
           choices: [
-            'View All Employess',
+            'View All Employees',
             'Add Employee',
             'Update Employee Role',
             'View All Roles',
@@ -54,30 +56,29 @@ function displayMainMenu() {
   
   // Function to handle the "View all employees" menu option
   function viewAllEmployees() {
-
-    const sql = ''
     // TODO: Add logic to retrieve and display all employees from the database
+    const sql = `SELECT e.id ID, e.first_name 'First Name', e.last_name 'Last Name', r.title Title,
+    d.department_name Department, r.salary Salary, CONCAT(m.first_name, ' ', m.last_name) 
+    Manager FROM employee e JOIN role r ON e.role_id = r.id JOIN
+    department d ON r.department_id = d.id LEFT JOIN employee m ON e.manager_id = m.id;`; 
+
     db.query(sql, (err, results) => {
       if (err) {
-        results.status(400).json({ error: "There was an Error"})
+        console.error('There was an error retrieving employeees data:', err);
+        displayMainMenu();
         return;
       }
-      resizeBy.json({
-        message: 'success',
-        data: results
+      console.log('Here are all of employees data:');
+      console.table(results);
+      displayMainMenu(); // Display the main menu again
       });
-    });
-
-
-
-    console.log('View all employees');
-    displayMainMenu(); // Display the main menu again
   }
   
   // Function to handle the "Add employee" option
   function addEmployee() {
     // TODO: Add logic to prompt for employee detail add an employee to the database
-    console.log('View all roles');
+    
+    
     displayMainMenu(); // Display the main menu again
   }
   
@@ -91,9 +92,23 @@ function displayMainMenu() {
   // Function to handle the "View all roles" option
   function viewAllRoles() {
     // TODO: Add logic retrieve and display all the roles from the database
-    console.log('View all roles');
-    displayMainMenu(); // Display the main menu again
-  }
+    const sql = `SELECT r.id ID, r.title Title, d.department_name Department, r.salary Salary FROM role r JOIN
+    department d ON r.department_id = d.id;`; 
+
+    db.query(sql, (err, results) => {
+      if (err) {
+        console.error('There was an error retrieving roles data:', err);
+        displayMainMenu();
+        return;
+      }
+      console.log('Here are all of the roles:');
+      console.table(results);
+      displayMainMenu(); // Display the main menu again
+      });
+    };
+
+ 
+
   
   // Function to handle the "Add a role" option
   function addRole() {
@@ -105,9 +120,21 @@ function displayMainMenu() {
   // Function to handle the "View all departments" option
   function viewAllDepartments() {
     // TODO: Add logic to retrieve and display all departments from the database
-    console.log('View all departments');
-    displayMainMenu(); // Display the main menu again
-  }
+    const sql = 'SELECT id ID,  department_name Department FROM department'
+    db.query(sql, (err, results) => {
+      if (err) {
+        console.error('There was an error retrieving department data:', err);
+        displayMainMenu();
+        return;
+      }
+      console.log('Here are all of the departments:');
+      console.table(results);
+      displayMainMenu(); // Display the main menu again
+      });
+    };
+
+
+   
   
   // Function to handle the "Add a department" option
   function addDepartment() {
