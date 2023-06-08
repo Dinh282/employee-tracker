@@ -12,17 +12,7 @@ const db = mysql2.createConnection({
     database: 'company_employees_db',
 });
 
-logBanner();
-displayMainMenu();
-
-
-// db.query('select * from employee', function(err, data){
-//     if (err) {
-//         console.log("Error!", err);
-//     } else {
-//         console.log('here is the data:', data);
-//     }
-
-// })
+logBanner(); //render "Employee Manager" at the start of application.
+displayMainMenu(); // render menu list at the start of application
 
 export default db
