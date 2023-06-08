@@ -20,6 +20,7 @@ function displayMainMenu() {
             'Add Role',
             'View All Departments',
             'Add Department',
+            'Remove Department',
             'Quit',
           ],
         },
@@ -31,7 +32,7 @@ function displayMainMenu() {
             Employees.viewAllEmployees();
             break;
           case 'View All Employees By Department':
-            Departments.viewEmployees();
+            Departments.viewEmployeesByDepartment();
             break;  
           case 'Add Employee':
             Employees.addEmployee();
@@ -51,6 +52,9 @@ function displayMainMenu() {
           case 'Add Department':
             Departments.addDepartment();
             break;
+          case 'Remove Department':
+              Departments.removeDepartment();
+              break;
           case 'Quit':
             console.log('Goodbye!');
             process.exit(0); //process.exit() is a Node.js exit process. It takes in 0 as default value. 

@@ -61,8 +61,8 @@ static queryDepartmentList() {
       });
   }
 
-
-  static viewEmployees() {
+  //Function to handle rending of employees by user selected department
+  static viewEmployeesByDepartment() {
 
     Departments.queryDepartmentList()
     .then((results) => {   
@@ -105,7 +105,49 @@ static queryDepartmentList() {
   }
 
 
+  //Function to handle the removal of a department.
+static removeDepartment() {
 
+    Departments.queryDepartmentList()
+    .then((results) => {   
+
+        const departmentOptions = results.map((department) => ({
+            value: department.ID,
+            name: department.Department,
+          }));
+
+    inquirer
+      .prompt([
+      {
+        type: 'list',
+        name: 'department',
+        message: "Which department do you want to remove?",
+        choices: departmentOptions,
+      },
+    ])
+    .then ((answer) => {
+      //destructuring syntax
+      const { department } = answer; 
+      const departmentId = department;
+
+      const sql = `DELETE FROM department WHERE id = ?`;
+      const data = [departmentId];
+      console.log("here", departmentId);
+      db.query(sql, data, (err, results) => {
+        if (err) {
+            console.error('There was an error removing the department:', err);
+            displayMainMenu();
+            return;
+        }
+            console.log('The department has been successfully removed. Here is the updated list of departments:')
+            // Departments.viewAllDepartments();
+            displayMainMenu();
+      });
+    });
+    });
+
+
+}
 
 
 
