@@ -1,22 +1,33 @@
 import db from './../../server.js';
 import inquirer from 'inquirer';
 import displayMainMenu from '../commandLineUtils.js';
+import Employees from './employees.js';
 
 class Departments {
 
- // Function to handle the "View all departments" option
- static viewAllDepartments() {
+static queryDepartmentList() {
     const sql = 'SELECT id ID,  department_name Department FROM department'
+
+    return new Promise((resolve, reject) => {
     db.query(sql, (err, results) => {
       if (err) {
         console.error('There was an error retrieving department data:', err);
-        displayMainMenu();
-        return;
+        reject (err);
+      } else {
+        resolve(results);
       }
-      console.log('Here are all of the departments:');
-      console.table(results);
-      displayMainMenu(); // Display the main menu again
-      });
+    });
+  });
+}
+
+ // Function to handle the "View all departments" option
+ static viewAllDepartments() {
+    Departments.queryDepartmentList()
+    .then((departmentList) => {
+        console.log('Here are all of the departments:');
+        console.table(departmentList);
+        displayMainMenu();
+        })
     };
   
   // Function to handle the "Add a department" option
@@ -44,11 +55,64 @@ class Departments {
           displayMainMenu();
           return;
         }
-        console.log(`Added ${department} to the database!`);
+        console.log(`Added ${department} department to the database!`);
         displayMainMenu(); // Display the main menu again
       });  
       });
   }
+
+
+  static viewEmployees() {
+
+    Departments.queryDepartmentList()
+    .then((results) => {   
+
+        const departmentOptions = results.map((department) => ({
+            value: department.ID,
+            name: department.Department,
+          }));
+
+    inquirer
+      .prompt([
+      {
+        type: 'list',
+        name: 'department',
+        message: "Which department do you want to look up?",
+        choices: departmentOptions,
+      },
+    ])
+    .then ((answer) => {
+      //destructuring syntax
+      const { department } = answer; 
+      const departmentId = department;
+     
+      let sql = Employees.viewAllEmployees(departmentId);
+
+      db.query(sql, departmentId, (err, results) => {
+        if (err) {
+          console.error(`There was an error retrieving the data:`, err);
+          displayMainMenu();
+          return;
+        }
+
+        const departmentName = departmentOptions.find((departments) => departments.value === department).name;
+        console.log(`Here are the employees from the ${departmentName} department:`);
+        console.table(results);
+        displayMainMenu(); // Display the main menu again
+      });  
+      });
+    })
+  }
+
+
+
+
+
+
+
+
+
+
 };
 
 export default Departments;

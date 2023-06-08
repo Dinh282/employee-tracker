@@ -13,6 +13,7 @@ function displayMainMenu() {
           message: 'What would you like to do?',
           choices: [
             'View All Employees',
+            'View All Employees By Department',
             'Add Employee',
             'Update Employee Role',
             'View All Roles',
@@ -29,6 +30,9 @@ function displayMainMenu() {
           case 'View All Employees':
             Employees.viewAllEmployees();
             break;
+          case 'View All Employees By Department':
+            Departments.viewEmployees();
+            break;  
           case 'Add Employee':
             Employees.addEmployee();
             break;

@@ -6,12 +6,17 @@ import displayMainMenu from '../commandLineUtils.js';
 class Employees {
 
 // Function to handle the "View all employees" menu option
- static viewAllEmployees() { //we set the viewAllEmployee() as statis so we can call on it without the need to create an instance of Employee class.
+ static viewAllEmployees(departmentId = null) { //we set the viewAllEmployee() as static so we can call on it without the need to create an instance of Employee class.
    
-    const sql = `SELECT e.id ID, e.first_name 'First Name', e.last_name 'Last Name', r.title Title,
+    let sql = `SELECT e.id ID, e.first_name 'First Name', e.last_name 'Last Name', r.title Title,
     d.department_name Department, r.salary Salary, CONCAT(m.first_name, ' ', m.last_name) 
     Manager FROM employee e JOIN role r ON e.role_id = r.id JOIN
-    department d ON r.department_id = d.id LEFT JOIN employee m ON e.manager_id = m.id;`; 
+    department d ON r.department_id = d.id LEFT JOIN employee m ON e.manager_id = m.id`; 
+
+    if(departmentId) {
+            sql += ` WHERE d.id = ?`
+            return sql;
+        }else {
 
     db.query(sql, (err, results) => {
       if (err) {
@@ -23,6 +28,8 @@ class Employees {
       console.table(results);
       displayMainMenu(); // Display the main menu again
       });
+
+        }
   }
 
 
@@ -155,7 +162,6 @@ static updateEmployeeRole() {
         ])
         .then((answers) => {
           const { employee, role } = answers;
-
           const sqlUpdateQuery = `UPDATE employee SET role_id = ? WHERE id = ?`;
           db.query(sqlUpdateQuery, [role, employee], (err, result) => {
             if(err) {
@@ -163,15 +169,15 @@ static updateEmployeeRole() {
               displayMainMenu();
               return;
             }
-            console.log(`Updated employee's role!`)
+
+            const employeeName = employeeOptions.find((employees) => employees.value === employee).name;
+            console.log(`Updated ${employeeName}'s role!`)
             displayMainMenu();
           })
-        
         })
     })
     })
   }
-
 };
 
   export default Employees;
