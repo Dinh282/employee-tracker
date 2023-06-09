@@ -55,8 +55,14 @@ static queryDepartmentList() {
           displayMainMenu();
           return;
         }
-        console.log(`Added ${department} department to the database!`);
-        displayMainMenu(); // Display the main menu again
+
+        Departments.queryDepartmentList()
+            .then((departmentList) => {
+                console.log(`The ${department} department has been successfully Added. Here is the updated list of departments:`)
+                console.table(departmentList);
+                displayMainMenu();
+                });
+      
       });  
       });
   }
@@ -86,7 +92,7 @@ static queryDepartmentList() {
       const { department } = answer; 
       const departmentId = department;
      
-      let sql = Employees.viewAllEmployees(departmentId);
+      let sql = Employees.queryEmployeeList(departmentId);
 
       db.query(sql, departmentId, (err, results) => {
         if (err) {
@@ -132,16 +138,20 @@ static removeDepartment() {
 
       const sql = `DELETE FROM department WHERE id = ?`;
       const data = [departmentId];
-      console.log("here", departmentId);
+      
       db.query(sql, data, (err, results) => {
         if (err) {
             console.error('There was an error removing the department:', err);
             displayMainMenu();
             return;
         }
-            console.log('The department has been successfully removed. Here is the updated list of departments:')
-            // Departments.viewAllDepartments();
-            displayMainMenu();
+            const departmentName = departmentOptions.find((departments) => departments.value === department).name;
+            Departments.queryDepartmentList()
+            .then((departmentList) => {
+                console.log(`The ${departmentName} department has been successfully removed. Here is the updated list of departments:`)
+                console.table(departmentList);
+                displayMainMenu();
+                });
       });
     });
     });

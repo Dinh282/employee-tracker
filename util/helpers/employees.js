@@ -5,31 +5,40 @@ import displayMainMenu from '../commandLineUtils.js';
 
 class Employees {
 
-// Function to handle the "View all employees" menu option
- static viewAllEmployees(departmentId = null) { //we set the viewAllEmployee() as static so we can call on it without the need to create an instance of Employee class.
-   
-    let sql = `SELECT e.id ID, e.first_name 'First Name', e.last_name 'Last Name', r.title Title,
-    d.department_name Department, r.salary Salary, CONCAT(m.first_name, ' ', m.last_name) 
-    Manager FROM employee e JOIN role r ON e.role_id = r.id JOIN
-    department d ON r.department_id = d.id LEFT JOIN employee m ON e.manager_id = m.id`; 
-
-    if(departmentId) {
+    static queryEmployeeList(departmentId = null) {
+        let sql = `SELECT e.id ID, e.first_name 'First Name', e.last_name 'Last Name', r.title Title,
+        d.department_name Department, r.salary Salary, CONCAT(m.first_name, ' ', m.last_name) 
+        Manager FROM employee e JOIN role r ON e.role_id = r.id JOIN
+        department d ON r.department_id = d.id LEFT JOIN employee m ON e.manager_id = m.id`
+    
+        if(departmentId) {
             sql += ` WHERE d.id = ?`
             return sql;
         }else {
-
-    db.query(sql, (err, results) => {
-      if (err) {
-        console.error('There was an error retrieving employeees data:', err);
-        displayMainMenu();
-        return;
-      }
-      console.log('Here are all of employees data:');
-      console.table(results);
-      displayMainMenu(); // Display the main menu again
+        return new Promise((resolve, reject) => {
+        db.query(sql, (err, results) => {
+          if (err) {
+            console.error('There was an error retrieving employee data:', err);
+            reject (err);
+          } else {
+            resolve(results);
+          }
+        });
       });
+    }
+}
 
-        }
+
+// Function to handle the "View all employees" menu option
+ static viewAllEmployees() { //we set the viewAllEmployee() as static so we can call on it without the need to create an instance of Employee class.
+   
+    Employees.queryEmployeeList()
+    .then((employeeList) => {
+        console.log('Here are all of the employees:');
+        console.table(employeeList);
+        displayMainMenu();
+        })
+
   }
 
 
@@ -178,6 +187,70 @@ static updateEmployeeRole() {
     })
     })
   }
+
+
+static removeEmployee(){
+
+    Employees.queryEmployeeList()
+    .then((results) => {   
+
+        const employeeOptions = results.map((employee) => ({
+            value: employee.ID,
+            name: `${employee['First Name']} ${employee['Last Name']}`,
+          }));
+
+    inquirer
+      .prompt([
+      {
+        type: 'list',
+        name: 'employee',
+        message: "Which employee do you want to remove?",
+        choices: employeeOptions,
+      },
+    ])
+    .then ((answer) => {
+      //destructuring syntax
+      const { employee } = answer; 
+      const employeeId = employee;
+
+      const sql = `DELETE FROM employee WHERE id = ?`;
+      const data = [employeeId];
+      db.query(sql, data, (err, results) => {
+        if (err) {
+            console.error('There was an error removing the employee:', err);
+            displayMainMenu();
+            return;
+        }
+        const employeeName = employeeOptions.find((employees) => employees.value === employee).name;
+        Employees.queryEmployeeList()
+        .then((employeeList) => {
+            console.log(`Employee ${employeeName} has been successfully removed. Here is the updated list of employees:`);
+            console.table(employeeList);
+            displayMainMenu();
+            });
+      });
+    });
+    });
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 };
 
   export default Employees;

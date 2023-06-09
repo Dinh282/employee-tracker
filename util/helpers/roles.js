@@ -1,39 +1,47 @@
 import db from './../../server.js';
 import inquirer from 'inquirer';
 import displayMainMenu from '../commandLineUtils.js';
+import Departments from './departments.js';
 
 class Roles {
 
+    
+    static queryRoleList() {
+        const sql = `SELECT r.id ID, r.title Title, d.department_name Department, r.salary Salary FROM role r JOIN
+        department d ON r.department_id = d.id;`
+    
+        return new Promise((resolve, reject) => {
+        db.query(sql, (err, results) => {
+          if (err) {
+            console.error('There was an error retrieving role data:', err);
+            reject (err);
+          } else {
+            resolve(results);
+          }
+        });
+      });
+    }
+
  // Function to handle the "View all roles" option
  static viewAllRoles() {
-    const sql = `SELECT r.id ID, r.title Title, d.department_name Department, r.salary Salary FROM role r JOIN
-    department d ON r.department_id = d.id;`; 
-
-    db.query(sql, (err, results) => {
-      if (err) {
-        console.error('There was an error retrieving roles data:', err);
+    Roles.queryRoleList()
+    .then((roleList) => {
+        console.log('Here are all of the roles:');
+        console.table(roleList);
         displayMainMenu();
-        return;
-      }
-      console.log('Here are all of the roles:');
-      console.table(results);
-      displayMainMenu(); // Display the main menu again
-      });
+        })
     };
+
 
   // Function to handle the "Add a role" option
   static addRole() {
 
-    db.query(`SELECT id, department_name FROM department`, (err, departments) => {
-      if (err) {
-        console.error('There was an error retrieving departments:', err);
-        displayMainMenu();
-        return;
-      }
-      const departmentOptions = departments.map((department) => ({
-        value: department.id,
-        name: department.department_name,
-      }));
+    Departments.queryDepartmentList()
+    .then((departmentList) => {
+            const departmentOptions = departmentList.map((department) => ({
+                    value: department.ID,
+                    name: department.Department,
+                  }));
 
     inquirer
       .prompt([
@@ -75,7 +83,61 @@ class Roles {
       });
     });   
   }
+
+
+
+
+static removeRole() {
+
+    Roles.queryRoleList()
+    .then((results) => {   
+
+        const roleOptions = results.map((role) => ({
+            value: role.ID,
+            name: role.Title,
+          }));
+
+    inquirer
+      .prompt([
+      {
+        type: 'list',
+        name: 'role',
+        message: "Which role do you want to remove?",
+        choices: roleOptions,
+      },
+    ])
+    .then ((answer) => {
+      //destructuring syntax
+      const { role } = answer; 
+      const roleId = role;
+
+      const sql = `DELETE FROM role WHERE id = ?`;
+      const data = [roleId];
+      db.query(sql, data, (err, results) => {
+        if (err) {
+            console.error('There was an error removing the role:', err);
+            displayMainMenu();
+            return;
+        }
+        const roleName = roleOptions.find((roles) => roles.value === role).name;
+        Roles.queryRoleList()
+        .then((roleList) => {
+            console.log(`The ${roleName} role has been successfully removed. Here is the updated list of roles:`);
+            console.table(roleList);
+            displayMainMenu();
+            });
+      });
+    });
+    });
+
+
+}
+
+
+
 };
+
+
 
 
 export default Roles;

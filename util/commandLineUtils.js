@@ -15,9 +15,11 @@ function displayMainMenu() {
             'View All Employees',
             'View All Employees By Department',
             'Add Employee',
+            'Remove Employee',
             'Update Employee Role',
             'View All Roles',
             'Add Role',
+            'Remove Role',
             'View All Departments',
             'Add Department',
             'Remove Department',
@@ -37,6 +39,9 @@ function displayMainMenu() {
           case 'Add Employee':
             Employees.addEmployee();
             break;
+          case 'Remove Employee':
+            Employees.removeEmployee();
+            break;  
           case 'Update Employee Role':
             Employees.updateEmployeeRole();
             break;
@@ -46,6 +51,9 @@ function displayMainMenu() {
           case 'Add Role':
             Roles.addRole();
             break;
+          case 'Remove Role':
+            Roles.removeRole();
+            break;  
           case 'View All Departments':
             Departments.viewAllDepartments();
             break;
