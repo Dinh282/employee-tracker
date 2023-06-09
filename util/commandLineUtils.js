@@ -2,6 +2,7 @@ import inquirer from 'inquirer';
 import Employees from './helpers/employees.js';
 import Roles from './helpers/roles.js';
 import Departments from './helpers/departments.js';
+import Managers from './helpers/manager.js';
 
 // Function to display the main menu and prompt for user choice
 function displayMainMenu() {
@@ -14,15 +15,18 @@ function displayMainMenu() {
           choices: [
             'View All Employees',
             'View All Employees By Department',
+            'View All Employees By Manager',
             'Add Employee',
             'Remove Employee',
             'Update Employee Role',
+            'Update Employee Manager',
             'View All Roles',
             'Add Role',
             'Remove Role',
             'View All Departments',
             'Add Department',
             'Remove Department',
+            'View Total Utilized Budget By Department',
             'Quit',
           ],
         },
@@ -35,7 +39,10 @@ function displayMainMenu() {
             break;
           case 'View All Employees By Department':
             Departments.viewEmployeesByDepartment();
-            break;  
+            break; 
+          case 'View All Employees By Manager':
+            Managers.viewEmployeesByManager();
+            break;     
           case 'Add Employee':
             Employees.addEmployee();
             break;
@@ -45,6 +52,9 @@ function displayMainMenu() {
           case 'Update Employee Role':
             Employees.updateEmployeeRole();
             break;
+          case 'Update Employee Manager':
+            Managers.updateEmployeeManager();
+            break;  
           case 'View All Roles':
             Roles.viewAllRoles();
             break;
@@ -61,8 +71,11 @@ function displayMainMenu() {
             Departments.addDepartment();
             break;
           case 'Remove Department':
-              Departments.removeDepartment();
-              break;
+            Departments.removeDepartment();
+            break;
+          case 'View Total Utilized Budget By Department':
+            Departments.viewBudget();
+            break;    
           case 'Quit':
             console.log('Goodbye!');
             process.exit(0); //process.exit() is a Node.js exit process. It takes in 0 as default value. 

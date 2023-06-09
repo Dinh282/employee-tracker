@@ -155,12 +155,55 @@ static removeDepartment() {
       });
     });
     });
-
-
 }
 
 
+static viewBudget() {
+    Departments.queryDepartmentList()
+    .then((results) => {   
 
+        const departmentOptions = results.map((department) => ({
+            value: department.ID,
+            name: department.Department,
+          }));
+
+    inquirer
+      .prompt([
+      {
+        type: 'list',
+        name: 'department',
+        message: "Which department do you want to view the total utilized budget of?",
+        choices: departmentOptions,
+      },
+    ])
+    .then ((answer) => {
+        //destructuring syntax
+        const { department } = answer; 
+        const departmentId = department;
+  
+        const sql = `SELECT SUM(r.salary) TotalBudget FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON
+        r.department_id = d.id WHERE d.id =?`;
+
+        const data = [departmentId];
+        
+        db.query(sql, data, (err, results) => {
+          if (err) {
+              console.error('There was an error retrieving total utilized budget data:', err);
+              displayMainMenu();
+              return;
+          }
+              const TotalBudget = results[0].TotalBudget;
+              const departmentName = departmentOptions.find((departments) => departments.value === department).name; 
+                  console.log(`The total utilized budget of the ${departmentName} department is $${TotalBudget}.`);
+                  displayMainMenu();
+                  
+        });
+
+    });
+
+
+});
+}
 
 
 
