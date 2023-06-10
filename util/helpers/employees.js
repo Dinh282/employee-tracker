@@ -1,11 +1,9 @@
-import db from './../../server.js';
 import inquirer from 'inquirer';
 import displayMainMenu from '../commandLineUtils.js';
 import Queries from './query.js';
 
 
 class Employees {
-
 // Function to handle the "View all employees" menu option
  static viewAllEmployees() { //we set the viewAllEmployee() as static so we can call on it without the need to create an instance of Employee class.
    
@@ -14,33 +12,32 @@ class Employees {
         console.log('Here are all of the employees:');
         console.table(employeeList);
         displayMainMenu();
-        })
-
+    })
   }
 
  // Function to handle the "Add employee" option
  static addEmployee() {
    
-      Queries.roleList()
-      .then((roles) =>{
+  Queries.roleList()
+  .then((roles) =>{
 
-      Queries.employeeList()
-      .then((managers) => {    
+    Queries.employeeList()
+    .then((managers) => {    
      
-      // Create an array of options for the available roles from the retrieved roles data.
-    const roleOptions = roles.map((role) => ({
-      value: role.ID,
-      name: role.Title,
-    }));
+        // Create an array of options for the available roles from the retrieved roles data.
+        const roleOptions = roles.map((role) => ({
+          value: role.ID,
+          name: role.Title,
+        }));
 
-     // Create an array of manager options choices using the retrieved employees names
-     const managerOptions = [
-      {value: null, name: 'None'},
-      ...managers.map((manager) => ({
-      value: manager.ID,
-      name: `${manager['First Name']} ${manager['Last Name']}`,
-    }))
-  ];
+        // Create an array of manager options choices using the retrieved employees names
+        const managerOptions = [  
+          {value: null, name: 'None'},
+          ...managers.map((manager) => ({
+            value: manager.ID,
+            name: `${manager['First Name']} ${manager['Last Name']}`,
+          }))
+        ];
     
     inquirer
       .prompt([
@@ -67,60 +64,43 @@ class Employees {
         choices: managerOptions,
       },
     ])
-    .then ((answers) => {
-      //destructuring syntax
-      const { first_name, last_name, role, manager } = answers; 
-      const data = [first_name, last_name, role, manager];
+      .then ((answers) => {
+        const { first_name, last_name, role, manager } = answers; 
+        const data = [first_name, last_name, role, manager];
 
-      Queries.add('employee', `(first_name, last_name, role_id, manager_id)
-      VALUES (?, ?, ?, ?)`, data)
+        Queries.add('employee', `(first_name, last_name, role_id, manager_id)
+        VALUES (?, ?, ?, ?)`, data)
 
-      Queries.employeeList()
-      .then((employeeList) => {
-        console.log(`Employee ${first_name} ${last_name} has been successfully added. Here is the updated list of employees:`);
-        console.table(employeeList);
-        displayMainMenu();
+        Queries.employeeList()
+        .then((employeeList) => {
+          console.log(`Employee ${first_name} ${last_name} has been successfully added. Here is the updated list of employees:`);
+          console.table(employeeList);
+          displayMainMenu();
         });
-
-      // const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
-
-      // db.query(sql, data, (err, results) => {
-      //   if (err) {
-      //     console.error('There was an error adding employee data:', err);
-      //     displayMainMenu();
-      //     return;
-      //   }
-
-        // console.log('Employee data was added successfully!:');
-        // displayMainMenu(); // Display the main menu again
       });  
-      });
     });
-  // });
-
+  });
 }
 
 // Function to handle the "Update an employee role" option
 static updateEmployeeRole() {
- 
 
-    Queries.employeeList()
-    .then((employeeList) => {
+  Queries.employeeList()
+  .then((employeeList) => {
 
     Queries.roleList()
     .then((roleList) => {
+      const roleOptions = roleList.map((role) => ({
+        value: role.ID,
+        name:role.Title,
+      }))
 
-    const roleOptions = roleList.map((role) => ({
-      value: role.ID,
-      name:role.Title,
-    }))
+      const employeeOptions = employeeList.map((employee) => ({
+        value: employee.ID,
+        name:`${employee['First Name']} ${employee['Last Name']}` ,
+      }))
 
-    const employeeOptions = employeeList.map((employee) => ({
-      value: employee.ID,
-      name:`${employee['First Name']} ${employee['Last Name']}` ,
-    }))
-
-    inquirer
+      inquirer
         .prompt([
           {
             type: 'list',
@@ -135,34 +115,31 @@ static updateEmployeeRole() {
             choices: roleOptions,
           },
         ])
-        .then((answers) => {
-          const { employee, role } = answers;
+      .then((answers) => {
+        const { employee, role } = answers;
 
-          Queries.update('role', [role, employee])
-          Queries.employeeList()
-          .then((employeeList) => {
-             const employeeName = employeeOptions.find((employees) => employees.value === employee).name;
-            console.log(`Updated ${employeeName}'s role! Here is the updated employee list:`)
-            console.table(employeeList);
-            displayMainMenu();
-            });
-
-          })
-        })
-
+        Queries.update('role', [role, employee])
+        Queries.employeeList()
+        .then((employeeList) => {
+          const employeeName = employeeOptions.find((employees) => employees.value === employee).name;
+          console.log(`Updated ${employeeName}'s role! Here is the updated employee list:`)
+          console.table(employeeList);
+          displayMainMenu();
+        });
+      })
     })
-  }
+  })
+}
 
 
 static removeEmployee(){
 
-    Queries.employeeList()
-    .then((results) => {   
-
-        const employeeOptions = results.map((employee) => ({
-            value: employee.ID,
-            name: `${employee['First Name']} ${employee['Last Name']}`,
-          }));
+  Queries.employeeList()
+  .then((results) => {   
+      const employeeOptions = results.map((employee) => ({
+        value: employee.ID,
+        name: `${employee['First Name']} ${employee['Last Name']}`,
+      }));
 
     inquirer
       .prompt([
@@ -177,24 +154,18 @@ static removeEmployee(){
       //destructuring syntax
       const { employee } = answer; 
       const employeeId = employee;
-
+      const employeeName = employeeOptions.find((employees) => employees.value === employee).name;
+      
       Queries.delete('employee', employeeId)
-
-        const employeeName = employeeOptions.find((employees) => employees.value === employee).name;
-   
-        Queries.employeeList()
-        .then((employeeList) => {
-            console.log(`Employee ${employeeName} has been successfully removed. Here is the updated list of employees:`);
-            console.table(employeeList);
-            displayMainMenu();
-            });
+      Queries.employeeList()
+      .then((employeeList) => {
+        console.log(`Employee ${employeeName} has been successfully removed. Here is the updated list of employees:`);
+        console.table(employeeList);
+        displayMainMenu();
+      });
     });
-    });
-
+  });
 }
-
-
-
 
 };
 

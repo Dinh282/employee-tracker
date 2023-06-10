@@ -1,22 +1,18 @@
-// import db from './../../server.js';
 import inquirer from 'inquirer';
 import displayMainMenu from '../commandLineUtils.js';
-// import Employees from './employees.js';
 import Queries from './query.js';
 
 class Departments {
 
  // Function to handle the "View all departments" option
  static viewAllDepartments() {
-
       Queries.departmentList()
       .then((departmentList) => {
             console.log('Here are all of the departments:');
             console.table(departmentList);
             displayMainMenu();
             })
-
-    };
+  };
   
   // Function to handle the "Add a department" option
   static addDepartment() {
@@ -29,20 +25,16 @@ class Departments {
       },
     ])
     .then ((answer) => {
-      //destructuring syntax
       const { department } = answer; 
       const data = [department];
     
-      Queries.add('department', '(department_name) VALUES (?)', data );
-
-
-        // Departments.queryDepartmentList()
-        Queries.departmentList()
-            .then((departmentList) => {
-                console.log(`The ${department} department has been successfully Added. Here is the updated list of departments:`)
-                console.table(departmentList);
-                displayMainMenu();
-                });
+      Queries.add('department', '(department_name) VALUES (?)', data ); //utilizing add method of Queries class to add department
+      Queries.departmentList()
+      .then((departmentList) => {
+        console.log(`The ${department} department has been successfully Added. Here is the updated list of departments:`)
+        console.table(departmentList);
+        displayMainMenu();
+        });
       });
   }
 
@@ -51,11 +43,10 @@ class Departments {
 
     Queries.departmentList()
     .then((results) => {   
-      
-        const departmentOptions = results.map((department) => ({
-            value: department.ID,
-            name: department.Department,
-          }));
+      const departmentOptions = results.map((department) => ({
+        value: department.ID,
+        name: department.Department,
+      }));
 
     inquirer
       .prompt([
@@ -67,7 +58,6 @@ class Departments {
       },
     ])
     .then ((answer) => {
-      //destructuring syntax
       const { department } = answer; 
       const departmentId = department;
 
@@ -76,24 +66,21 @@ class Departments {
         const departmentName = departmentOptions.find((departments) => departments.value === department).name;
         console.log(`Here are the employees from the ${departmentName} department:`);
         console.table(results);
-        displayMainMenu(); // Display the main menu again
-
-        });
-      });  
+        displayMainMenu();
       });
-    
-  }
+    });  
+  });
+}
 
-  //Function to handle the removal of a department.
+//Function to handle the removal of a department.
 static removeDepartment() {
 
-    Queries.departmentList()
-    .then((results) => {   
-
-        const departmentOptions = results.map((department) => ({
-            value: department.ID,
-            name: department.Department,
-          }));
+  Queries.departmentList()
+  .then((results) => {   
+    const departmentOptions = results.map((department) => ({
+      value: department.ID,
+      name: department.Department,
+    }));
 
     inquirer
       .prompt([
@@ -105,22 +92,20 @@ static removeDepartment() {
       },
     ])
     .then ((answer) => {
-      //destructuring syntax
       const { department } = answer; 
       const departmentId = department;
 
-        Queries.delete("department", departmentId);
-
-            const departmentName = departmentOptions.find((departments) => departments.value === department).name;
+      Queries.delete("department", departmentId);
+      const departmentName = departmentOptions.find((departments) => departments.value === department).name;
       
-            Queries.departmentList()
-            .then((departmentList) => {
-                console.log(`The ${departmentName} department has been successfully removed. Here is the updated list of departments:`)
-                console.table(departmentList);
-                displayMainMenu();
-                });
+      Queries.departmentList()
+      .then((departmentList) => {
+          console.log(`The ${departmentName} department has been successfully removed. Here is the updated list of departments:`)
+          console.table(departmentList);
+          displayMainMenu();
       });
     });
+  });
 }
 
 
@@ -128,11 +113,10 @@ static viewBudget() {
   
     Queries.departmentList()
     .then((results) => {   
-
-        const departmentOptions = results.map((department) => ({
-            value: department.ID,
-            name: department.Department,
-          }));
+      const departmentOptions = results.map((department) => ({
+          value: department.ID,
+          name: department.Department,
+        }));
 
     inquirer
       .prompt([
@@ -147,12 +131,10 @@ static viewBudget() {
         //destructuring syntax
         const { department } = answer; 
         const departmentId = department;
-        
-        Queries.budgetByDepartment(departmentId, departmentOptions);
-        
+        Queries.budgetByDepartment(departmentId, departmentOptions);    
     });
-});
-}
+  });
+};
 
 
 };

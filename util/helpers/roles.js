@@ -1,7 +1,5 @@
-// import db from './../../server.js';
 import inquirer from 'inquirer';
 import displayMainMenu from '../commandLineUtils.js';
-// import Departments from './departments.js';
 import Queries from './query.js';
 
 class Roles {
@@ -9,25 +7,23 @@ class Roles {
  // Function to handle the "View all roles" option
  static viewAllRoles() {
 
-    // Roles.queryRoleList()
-    Queries.roleList()
-    .then((roleList) => {
-        console.log('Here are all of the roles:');
-        console.table(roleList);
-        displayMainMenu();
-        })
-    };
+  Queries.roleList()
+  .then((roleList) => {
+      console.log('Here are all of the roles:');
+      console.table(roleList);
+      displayMainMenu();
+      })
+  };
 
+// Function to handle the "Add a role" option
+static addRole() {
 
-  // Function to handle the "Add a role" option
-  static addRole() {
-
-    Queries.departmentList()
-    .then((departmentList) => {
-            const departmentOptions = departmentList.map((department) => ({
-                    value: department.ID,
-                    name: department.Department,
-                  }));
+  Queries.departmentList()
+  .then((departmentList) => {
+      const departmentOptions = departmentList.map((department) => ({
+          value: department.ID,
+          name: department.Department,
+      }));
 
     inquirer
       .prompt([
@@ -49,33 +45,31 @@ class Roles {
       },
     ])
     .then ((answers) => {
-      //destructuring syntax
       const { role, salary, department } = answers; 
       const data = [role, salary, department];
 
       Queries.add('role', `(title, salary, department_id)
       VALUES (?, ?, ?)`, data );
       
-        Queries.roleList()
+      Queries.roleList()
         .then((roleList) => {
-            console.log(`The ${role} role has been successfully removed. Here is the updated list of roles:`);
-            console.table(roleList);
-            displayMainMenu();
-            });
+          console.log(`The ${role} role has been successfully removed. Here is the updated list of roles:`);
+          console.table(roleList);
+          displayMainMenu();
       });
-    });   
-  }
+    });
+  });   
+}
 
 
 static removeRole() {
 
     Queries.roleList()
     .then((results) => {   
-
-        const roleOptions = results.map((role) => ({
-            value: role.ID,
-            name: role.Title,
-          }));
+      const roleOptions = results.map((role) => ({
+        value: role.ID,
+        name: role.Title,
+      }));
 
     inquirer
       .prompt([
@@ -87,27 +81,22 @@ static removeRole() {
       },
     ])
     .then ((answer) => {
-      //destructuring syntax
       const { role } = answer; 
       const roleId = role;
 
       Queries.delete("role", roleId)
         const roleName = roleOptions.find((roles) => roles.value === role).name;
-        Queries.roleList()
-        .then((roleList) => {
-            console.log(`The ${roleName} role has been successfully removed. Here is the updated list of roles:`);
-            console.table(roleList);
-            displayMainMenu();
-            });
+    
+      Queries.roleList()
+      .then((roleList) => {
+          console.log(`The ${roleName} role has been successfully removed. Here is the updated list of roles:`);
+          console.table(roleList);
+          displayMainMenu();
+      });
     });
-    });
+  });
 }
 
-
-
 };
-
-
-
 
 export default Roles;
