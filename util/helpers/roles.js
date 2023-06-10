@@ -53,7 +53,7 @@ static addRole() {
       
       Queries.roleList()
         .then((roleList) => {
-          console.log(`The ${role} role has been successfully removed. Here is the updated list of roles:`);
+          console.log(`The ${role} role has been successfully added. Here is the updated list of roles:`);
           console.table(roleList);
           displayMainMenu();
       });

@@ -31,7 +31,7 @@ class Departments {
       Queries.add('department', '(department_name) VALUES (?)', data ); //utilizing add method of Queries class to add department
       Queries.departmentList()
       .then((departmentList) => {
-        console.log(`The ${department} department has been successfully Added. Here is the updated list of departments:`)
+        console.log(`The ${department} department has been successfully added. Here is the updated list of departments:`)
         console.table(departmentList);
         displayMainMenu();
         });

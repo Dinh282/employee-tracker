@@ -11,7 +11,7 @@ static viewEmployeesByManager() {
   Queries.employeeList()
   .then((results) => {
     const managerOptions = results
-      .filter((employee) => employee.Manager !== null)
+      .filter((employee) => employee.Manager !== null)  
       .reduce((options, employee) => {
         const managerName = employee.Manager;
         const existingOptionIndex = options.findIndex((option) => option.name === managerName);
