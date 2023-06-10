@@ -58,12 +58,20 @@ Video Demo of Application:
 
 
 
+https://github.com/Dinh282/employee-tracker/assets/112836220/14de84ab-094a-4ecc-8538-c1229a524034
 
- Screenshots of Command Lines:
+
+
+
+ Screenshots of Aapplication:
 
 ![Screenshot of App ](./assets/employee-manager-app-sc.jpg)
 
+Screenshot of Data Displayed:
+
 ![Screenshot of Data Display](./assets/employee-manager-app-cml-display.jpg)
+
+Screenshot of Menu:
 
 ![Screenshot of Data Display](./assets/employee-manager-menu.jpg)
 
