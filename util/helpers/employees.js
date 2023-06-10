@@ -1,38 +1,40 @@
 import db from './../../server.js';
 import inquirer from 'inquirer';
 import displayMainMenu from '../commandLineUtils.js';
+import Queries from './query.js';
 
 
 class Employees {
 
-    static queryEmployeeList(departmentId = null) {
-        let sql = `SELECT e.id ID, e.first_name 'First Name', e.last_name 'Last Name', r.title Title,
-        d.department_name Department, r.salary Salary, CONCAT(m.first_name, ' ', m.last_name) 
-        Manager FROM employee e JOIN role r ON e.role_id = r.id JOIN
-        department d ON r.department_id = d.id LEFT JOIN employee m ON e.manager_id = m.id`;
+//     static queryEmployeeList(departmentId = null) {
+//         let sql = `SELECT e.id ID, e.first_name 'First Name', e.last_name 'Last Name', r.title Title,
+//         d.department_name Department, r.salary Salary, CONCAT(m.first_name, ' ', m.last_name) 
+//         Manager FROM employee e JOIN role r ON e.role_id = r.id JOIN
+//         department d ON r.department_id = d.id LEFT JOIN employee m ON e.manager_id = m.id`;
     
-        if(departmentId) {
-            sql += ` WHERE d.id = ?`
-            return sql;
-        }else {
-        return new Promise((resolve, reject) => {
-        db.query(sql, (err, results) => {
-          if (err) {
-            console.error('There was an error retrieving employee data:', err);
-            reject (err);
-          } else {
-            resolve(results);
-          }
-        });
-      });
-    }
-}
+//         if(departmentId) {
+//             sql += ` WHERE d.id = ?`
+//             return sql;
+//         }else {
+//         return new Promise((resolve, reject) => {
+//         db.query(sql, (err, results) => {
+//           if (err) {
+//             console.error('There was an error retrieving employee data:', err);
+//             reject (err);
+//           } else {
+//             resolve(results);
+//           }
+//         });
+//       });
+//     }
+// }
 
 
 // Function to handle the "View all employees" menu option
  static viewAllEmployees() { //we set the viewAllEmployee() as static so we can call on it without the need to create an instance of Employee class.
    
-    Employees.queryEmployeeList()
+    // Employees.queryEmployeeList()
+    Queries.employeeList()
     .then((employeeList) => {
         console.log('Here are all of the employees:');
         console.table(employeeList);
@@ -45,34 +47,43 @@ class Employees {
  // Function to handle the "Add employee" option
  static addEmployee() {
    
-    //we query for list of roles for user to select from when addin ne employee
-    db.query(`SELECT id, title FROM role`, (err, roles) => {
-      if (err) {
-        console.error('There was an error retrieving roles:', err);
-        displayMainMenu();
-        return;
-      }
+    //we query for list of roles for user to select from when adding an employee
+    // db.query(`SELECT id ID, title Title FROM role`, (err, roles) => {
+    //   if (err) {
+    //     console.error('There was an error retrieving roles:', err);
+    //     displayMainMenu();
+    //     return;
+    //   }
+
+      Queries.roleList()
+      .then((roles) =>{
+
 
       // we query for list of employee names from database that user can select from to assign manager to the new employee.
-      db.query(`SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee`, (err, managers) => {
-        if (err) {
-          console.error('There was an error retrieving employee names:', err);
-          displayMainMenu();
-          return;
-        }
+      // db.query(`SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee`, (err, managers) => {
+      //   if (err) {
+      //     console.error('There was an error retrieving employee names:', err);
+      //     displayMainMenu();
+      //     return;
+      //   }
+
+      Queries.employeeList()
+      .then((managers) => {    
+        console.log(managers);
+
 
       // Create an array of options for the available roles from the retrieved roles data.
     const roleOptions = roles.map((role) => ({
-      value: role.id,
-      name: role.title,
+      value: role.ID,
+      name: role.Title,
     }));
 
      // Create an array of manager options choices using the retrieved employees names
      const managerOptions = [
       {value: null, name: 'None'},
       ...managers.map((manager) => ({
-      value: manager.id,
-      name: manager.name,
+      value: manager.ID,
+      name: `${manager['First Name']} ${manager['Last Name']}`,
     }))
   ];
     
@@ -116,42 +127,52 @@ class Employees {
           displayMainMenu();
           return;
         }
+
+
+        
         console.log('Employee data was added successfully!:');
         displayMainMenu(); // Display the main menu again
       });  
       });
     });
   });
+  // });//
 }
 
 // Function to handle the "Update an employee role" option
 static updateEmployeeRole() {
     
-    const sqlEmployeesQuery = `SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employee`;
-    const sqlRolesQuery = `SELECT id, title FROM role`;
+    // const sqlEmployeesQuery = `SELECT id ID, CONCAT(first_name, ' ', last_name) AS name FROM employee`;
+    // const sqlRolesQuery = `SELECT id ID, title Title FROM role`;
 
-    db.query(sqlEmployeesQuery, (err, employeeList) => {
-      if (err) {
-        console.err('There was an error retrieving list of employees:', err);
-        displayMainMenu();
-        return;
-      }
-    
-    db.query(sqlRolesQuery, (err, roleList) => {
-      if (err) {
-        console.error('There was an error retrieving list of roles:', err);
-        displayMainMenu();
-        return; 
-      }
+    // db.query(sqlEmployeesQuery, (err, employeeList) => {
+    //   if (err) {
+    //     console.err('There was an error retrieving list of employees:', err);
+    //     displayMainMenu();
+    //     return;
+    //   }
+     
+    // db.query(sqlRolesQuery, (err, roleList) => {
+    //   if (err) {
+    //     console.error('There was an error retrieving list of roles:', err);
+    //     displayMainMenu();
+    //     return; 
+    //   }
+
+    Queries.employeeList()
+    .then((employeeList) => {
+
+    Queries.roleList()
+    .then((roleList) => {
 
     const roleOptions = roleList.map((role) => ({
-      value: role.id,
-      name:role.title,
+      value: role.ID,
+      name:role.Title,
     }))
 
     const employeeOptions = employeeList.map((employee) => ({
-      value: employee.id,
-      name:employee.name,
+      value: employee.ID,
+      name:`${employee['First Name']} ${employee['Last Name']}` ,
     }))
 
     inquirer
@@ -171,27 +192,31 @@ static updateEmployeeRole() {
         ])
         .then((answers) => {
           const { employee, role } = answers;
-          const sqlUpdateQuery = `UPDATE employee SET role_id = ? WHERE id = ?`;
-          db.query(sqlUpdateQuery, [role, employee], (err, result) => {
-            if(err) {
-              console.error(`There was an error updating the employee's role:`, err);
-              displayMainMenu();
-              return;
-            }
+
+          Queries.update('role', [role, employee])
+          
+          // const sqlUpdateQuery = `UPDATE employee SET role_id = ? WHERE id = ?`;
+          // db.query(sqlUpdateQuery, [role, employee], (err, result) => {
+          //   if(err) {
+          //     console.error(`There was an error updating the employee's role:`, err);
+          //     displayMainMenu();
+          //     return;
+          //   }
 
             const employeeName = employeeOptions.find((employees) => employees.value === employee).name;
             console.log(`Updated ${employeeName}'s role!`)
             displayMainMenu();
           })
         })
-    })
+    // })//
     })
   }
 
 
 static removeEmployee(){
 
-    Employees.queryEmployeeList()
+    // Employees.queryEmployeeList()
+    Queries.employeeList()
     .then((results) => {   
 
         const employeeOptions = results.map((employee) => ({
@@ -213,22 +238,28 @@ static removeEmployee(){
       const { employee } = answer; 
       const employeeId = employee;
 
-      const sql = `DELETE FROM employee WHERE id = ?`;
-      const data = [employeeId];
-      db.query(sql, data, (err, results) => {
-        if (err) {
-            console.error('There was an error removing the employee:', err);
-            displayMainMenu();
-            return;
-        }
+      Queries.delete('employee', employeeId)
+
+
+      // const sql = `DELETE FROM employee WHERE id = ?`;
+      // const data = [employeeId];
+
+
+      // db.query(sql, data, (err, results) => {
+      //   if (err) {
+      //       console.error('There was an error removing the employee:', err);
+      //       displayMainMenu();
+      //       return;
+      //   }
         const employeeName = employeeOptions.find((employees) => employees.value === employee).name;
-        Employees.queryEmployeeList()
+        // Employees.queryEmployeeList()
+        Queries.employeeList()
         .then((employeeList) => {
             console.log(`Employee ${employeeName} has been successfully removed. Here is the updated list of employees:`);
             console.table(employeeList);
             displayMainMenu();
             });
-      });
+      // });//
     });
     });
 

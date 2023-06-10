@@ -2,13 +2,15 @@ import db from './../../server.js';
 import inquirer from 'inquirer';
 import displayMainMenu from '../commandLineUtils.js';
 import Employees from './employees.js';
+import Queries from './query.js';
 
 
 class Managers {
 
 static viewEmployeesByManager() {
 
-    Employees.queryEmployeeList()
+    // Employees.queryEmployeeList()
+    Queries.employeeList()
       .then((results) => {
 
         const managerOptions = results
@@ -40,19 +42,24 @@ static viewEmployeesByManager() {
           ])
           .then((answer) => {
             const { manager } = answer;
-  
-            const sql = `SELECT e.id, e.first_name, e.last_name, r.title
-                         FROM employee e
-                         JOIN role r ON e.role_id = r.id
-                         WHERE e.id IN (?)`;
             const data = [manager];
+
+            // const sql = `SELECT e.id, e.first_name, e.last_name, r.title
+            //              FROM employee e
+            //              JOIN role r ON e.role_id = r.id
+            //              WHERE e.id IN (?)`;
+            
   
-            db.query(sql, data, (err, results) => {
-              if (err) {
-                console.error('Error retrieving employees by manager data:', err);
-                displayMainMenu();
-                return;
-              }
+            // db.query(sql, data, (err, results) => {
+            //   if (err) {
+            //     console.error('Error retrieving employees by manager data:', err);
+            //     displayMainMenu();
+            //     return;
+            //   }
+            
+              Queries.managerData(data)
+              .then((results) => {
+
               const managerName = managerOptions.find((managers) => managers.value === manager).name;
               console.log(`Here are the employees managed by ${managerName}:`);
               console.table(results);
@@ -70,7 +77,8 @@ static viewEmployeesByManager() {
 
 static updateEmployeeManager() {
 
-    Employees.queryEmployeeList()
+    // Employees.queryEmployeeList()
+    Queries.employeeList()
     .then((results) => {
       console.log(results);
       const employeeOptions = results.map((employee) => ({
@@ -108,18 +116,24 @@ static updateEmployeeManager() {
             .then((secondAnswer) => {
               const { manager } = secondAnswer;
 
-              const sql = 'UPDATE employee SET manager_id = ? WHERE id = ?';
-              const data = [manager, employee];
+              Queries.update('manager', [manager, employee])
 
-              db.query(sql, data, (err, result) => {
-                if (err) {
-                  console.error(`Error updating the employee's manager:`, err);
-                  displayMainMenu();
-                  return;
-                }
-                console.log('Employee manager updated successfully.');
-                displayMainMenu();
-              });
+              // const sql = 'UPDATE employee SET manager_id = ? WHERE id = ?';
+              // const data = [manager, employee];
+
+              // db.query(sql, data, (err, result) => {
+              //   if (err) {
+              //     console.error(`Error updating the employee's manager:`, err);
+              //     displayMainMenu();
+              //     return;
+              //   }
+              //   console.log('Employee manager updated successfully.');
+              //   displayMainMenu();
+              // });
+
+              console.log('Employee manager updated successfully.');
+              displayMainMenu();
+
             })
             .catch((error) => {
               console.error('Error selecting manager:', error);
