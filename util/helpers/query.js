@@ -84,33 +84,17 @@ static budgetByDepartment(departmentId, departmentOptions){
 
 }
 
-// static addDepartment(department) {
-//   const sql = `INSERT INTO department (department_name)
-//       VALUES (?)`;
-
-//   db.query(sql, department, (err, results) => {
-//       if (err) {
-//         console.error(`There was an error adding ${department} to the database:`, err);
-//         displayMainMenu();
-//         return;
-//       }
-//     })
-// }
-
-
 static add(where, sql, data) {
    let sqlQuery = `INSERT INTO ${where} ${sql} `;
 
   db.query(sqlQuery, data, (err, results) => {
       if (err) {
-        console.error(`There was an error adding ${department} to the database:`, err);
+        console.error(`There was an error adding ${where} to the database:`, err);
         displayMainMenu();
         return;
       }
     })
 }
-
-
 
 static roleList() {
   const sql = `SELECT r.id ID, r.title Title, d.department_name Department, r.salary Salary FROM role r JOIN
@@ -158,9 +142,7 @@ static update(what, data) {
     }
   });
 
-
 }
-
 
 
 }
